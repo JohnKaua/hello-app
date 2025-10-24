@@ -32,7 +32,7 @@ jobs:
     - name: Checkout manifests repository
       uses: actions/checkout@v4
       with:
-        repository: seu_usuario_github/hello-manifests
+        repository: JohnKaua/hello-manifests
         token: ${{ secrets.MANIFESTS_REPO_TOKEN }}
         path: manifests
 
