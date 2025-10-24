@@ -2,8 +2,8 @@ name: CI/CD - Build & Update Manifests
 
 on:
   push:
-    branches: [ "main" ]   # roda quando há push na branch main
-  workflow_dispatch:        # permite rodar manualmente no GitHub Actions
+    branches: [ "main" ]
+  workflow_dispatch:
 
 env:
   IMAGE_NAME: johnkaua/hello-app
@@ -41,18 +41,15 @@ jobs:
         IMAGE=${{ env.IMAGE_NAME }}:${{ github.sha }}
         echo "Updating manifests to image $IMAGE"
         sed -i "s|${{ env.IMAGE_NAME }}:.*|${IMAGE}|g" manifests/deployment.yaml
-        cd manifests
-        git config user.name "github-actions[bot]"
-        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git add deployment.yaml
-        git commit -m "ci: update image to $IMAGE [skip ci]" || echo "no changes"
-        git push origin HEAD:ci/update-image-${{ github.sha }}
 
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v6
       with:
+        path: manifests
         token: ${{ secrets.MANIFESTS_REPO_TOKEN }}
-        commit-message: "chore: update image to ${{ github.sha }}"
+        commit-message: "ci: update image to ${{ github.sha }}"
         branch: "ci/update-image-${{ github.sha }}"
         title: "CI: update image to ${{ github.sha }}"
         body: "Atualização automática do manifest pelo GitHub Actions"
+        author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
+        committer: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
